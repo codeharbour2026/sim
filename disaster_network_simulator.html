@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Disaster Detection Network Simulator</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1020;--panel:#131b2e;--panel2:#0e1729;--line:#26334d;--muted:#91a0b9;--text:#edf3ff;--green:#22c55e;--blue:#3b82f6;--orange:#f97316;--red:#ef4444;--purple:#a855f7}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#17243e 0,#0b1020 55%);color:var(--text);font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 24px;border-bottom:1px solid var(--line);background:#0b1020cc;position:sticky;top:0;z-index:5;backdrop-filter:blur(12px)}
+.brand{display:flex;align-items:center;gap:12px}.logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#2563eb,#14b8a6);display:grid;place-items:center;font-size:21px}.brand h1{font-size:17px;margin:0}.brand p{margin:2px 0 0;color:var(--muted);font-size:12px}.status{display:flex;align-items:center;gap:8px;color:#a7f3d0;font-size:12px}.dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green)}
+main{max-width:1500px;margin:auto;padding:22px;display:grid;gap:18px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.panel,.stat{background:linear-gradient(145deg,#151f34,#10182a);border:1px solid var(--line);border-radius:16px;box-shadow:0 10px 30px #0002}.stat{padding:16px}.stat span{display:block;color:var(--muted);font-size:12px}.stat strong{font-size:27px;display:block;margin-top:5px}.layout{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(300px,.85fr);gap:18px}.panel{padding:17px}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.panel h2{font-size:15px;margin:0}.sub{font-size:11px;color:var(--muted)}button,select{font:inherit;color:var(--text);background:#1c2a43;border:1px solid #344563;border-radius:9px;padding:8px 11px;cursor:pointer}button:hover{border-color:#7294c7;background:#243653}button:disabled{opacity:.4;cursor:not-allowed}.map-wrap{position:relative;overflow:hidden;border-radius:12px;background:radial-gradient(ellipse at 50% 45%,#132b43,#0b1628 70%);border:1px solid #233653}.map{width:100%;height:auto;display:block;min-height:300px}.land{fill:#1b3850;stroke:#31516b;stroke-width:1.2}.gridline{stroke:#25415a;stroke-width:.7;opacity:.45}.route{stroke:#7b91ae;stroke-width:1.5;stroke-dasharray:5 6;opacity:.65;fill:none}.node{cursor:pointer;stroke:#e6f2ff;stroke-width:1.5}.node:hover{stroke-width:3}.node-label{fill:#dbeafe;font-size:11px;font-weight:600;paint-order:stroke;stroke:#0b1628;stroke-width:3px;stroke-linejoin:round}.packet{fill:#fff;filter:drop-shadow(0 0 5px #fff)}.map-legend{display:flex;gap:14px;flex-wrap:wrap;padding:11px 2px 0;color:var(--muted);font-size:11px}.key{display:inline-flex;align-items:center;gap:6px}.swatch{width:8px;height:8px;border-radius:50%}.device-list{display:grid;gap:8px}.device{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:11px;background:#101a2d;cursor:pointer}.device.selected{border-color:#6b8fca;background:#172640}.device-icon{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:17px;background:#24334b}.device b{font-size:12px}.device small{display:block;color:var(--muted);font-size:10px}.pill{font-size:10px;border-radius:99px;padding:3px 7px;background:#173b2b;color:#86efac}.pill.off{background:#442025;color:#fca5a5}.lower{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}.controls{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.disaster{padding:12px;text-align:left;border-radius:11px;background:#101a2d;border:1px solid var(--line)}.disaster strong{display:block;font-size:12px}.disaster small{color:var(--muted);font-size:10px}.disaster.active{outline:2px solid currentColor;background:#1c2639}.disaster[data-type=quake]{color:var(--red)}.disaster[data-type=flood]{color:var(--blue)}.disaster[data-type=fire]{color:var(--orange)}.disaster[data-type=volcano]{color:var(--purple)}.readings{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.reading{background:#101a2d;border:1px solid var(--line);border-radius:10px;padding:11px}.reading span{color:var(--muted);font-size:10px}.reading strong{display:block;font-size:18px;margin-top:4px}.reading em{font-style:normal;font-size:10px;color:var(--muted)}.log{height:185px;overflow:auto;background:#0b1424;border:1px solid var(--line);border-radius:10px;padding:10px;font:11px/1.7 ui-monospace,monospace}.logline{border-bottom:1px solid #1b2940;padding:3px 0}.time{color:#7186a7}.good{color:#86efac}.warn{color:#fbbf24}.bad{color:#fca5a5}.actions{display:flex;gap:8px;flex-wrap:wrap}.hint{color:var(--muted);font-size:11px;margin-top:10px}.bar{height:5px;background:#26364f;border-radius:10px;overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:#38bdf8;width:92%}
+@media(max-width:900px){.layout,.lower{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){header{padding:14px}.brand h1{font-size:14px}main{padding:12px}.stats{gap:8px}.stat{padding:12px}.stat strong{font-size:22px}.map svg{min-height:240px}.controls{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<header><div class="brand"><div class="logo">⌁</div><div><h1>DISASTER NETWORK CONTROL</h1><p>Global early-warning system · Simulation environment</p></div></div><div class="status"><i class="dot"></i><span id="systemStatus">SYSTEM OPERATIONAL</span></div></header>
+<main>
+<section class="stats">
+ <div class="stat"><span>NETWORK DEVICES</span><strong id="deviceCount">7 / 7</strong></div>
+ <div class="stat"><span>ACTIVE ALERTS</span><strong id="alertCount">0</strong></div>
+ <div class="stat"><span>PACKETS RECEIVED</span><strong id="packetCount">0</strong></div>
+ <div class="stat"><span>NETWORK HEALTH</span><strong id="health">100%</strong></div>
+</section>
+<section class="layout">
+ <div class="panel"><div class="panel-head"><div><h2>Global sensor network</h2><div class="sub">Select a marker or device to inspect it · illustrative locations</div></div><span class="pill">LIVE SIMULATION</span></div>
+ <div class="map-wrap">
+ <svg class="map" viewBox="0 0 900 430" role="img" aria-label="Illustrative world map showing disaster monitoring devices">
+ <defs><pattern id="dots" width="28" height="28" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#29425a"/></pattern></defs>
+ <rect width="900" height="430" fill="url(#dots)"/>
+ <g opacity=".5"><path class="gridline" d="M0 107H900M0 215H900M0 322H900M150 0V430M300 0V430M450 0V430M600 0V430M750 0V430"/></g>
+ <g class="land">
+ <path d="M80 105l35-35 62-15 40 20 30 3 20 30-15 24-32 7-15 32-25 11-8 42-24 15-15-22-27-10-9-38-28-18-9-27z"/>
+ <path d="M245 238l30 8 20 31-9 35-18 25-5 43-20 34-15-20 2-42-17-33 8-37z"/>
+ <path d="M385 90l34-20 50 3 18 19 44-4 40 23-10 24-39 6-21 27-28-3-16 25-32-8-18-28-33-5-16-27z"/>
+ <path d="M435 205l38-13 37 18 17 39-12 49-27 42-27-12-12-45-25-34z"/>
+ <path d="M550 92l48-24 89 12 62 37 48 18 20 39-30 27-43-8-29 20-44-12-23-34-49 4-30-31-38-10z"/>
+ <path d="M724 274l35-15 39 18 18 35-24 27-41-8-24-27z"/>
+ <path d="M325 58l16-10 19 8-5 18-22 2z"/>
+ </g>
+ <g id="routes"><path class="route" d="M450 205L185 155M450 205L290 290M450 205L480 250M450 205L650 145M450 205L735 300M450 205L575 85"/></g>
+ <g id="markers">
+ <g data-id="seismo" tabindex="0"><circle class="node" cx="185" cy="155" r="8" fill="#ef4444"/><text class="node-label" x="198" y="151">Seismometer</text></g>
+ <g data-id="stream" tabindex="0"><circle class="node" cx="290" cy="290" r="8" fill="#3b82f6"/><text class="node-label" x="302" y="286">Stream gauge</text></g>
+ <g data-id="satellite" tabindex="0"><circle class="node" cx="450" cy="205" r="9" fill="#22c55e"/><text class="node-label" x="463" y="200">Satellite relay</text></g>
+ <g data-id="dart" tabindex="0"><circle class="node" cx="480" cy="350" r="8" fill="#3b82f6"/><text class="node-label" x="492" y="347">DART buoy</text></g>
+ <g data-id="weather" tabindex="0"><circle class="node" cx="650" cy="145" r="8" fill="#f97316"/><text class="node-label" x="662" y="141">Weather station</text></g>
+ <g data-id="volcano" tabindex="0"><circle class="node" cx="735" cy="300" r="8" fill="#a855f7"/><text class="node-label" x="747" y="296">Gas &amp; tilt</text></g>
+ <g data-id="base" tabindex="0"><circle class="node" cx="575" cy="85" r="8" fill="#22c55e"/><text class="node-label" x="588" y="81">Base station</text></g>
+ </g><g id="packetLayer"></g>
+ </svg></div>
+ <div class="map-legend"><span class="key"><i class="swatch" style="background:#3b82f6"></i>Flood / tsunami</span><span class="key"><i class="swatch" style="background:#f97316"></i>Bushfire</span><span class="key"><i class="swatch" style="background:#ef4444"></i>Earthquake</span><span class="key"><i class="swatch" style="background:#a855f7"></i>Volcano</span><span class="key"><i class="swatch" style="background:#22c55e"></i>Multi-purpose</span></div>
+ </div>
+ <div class="panel"><div class="panel-head"><div><h2>Monitoring devices</h2><div class="sub">7 registered network nodes</div></div><button id="toggleAll">Disable all</button></div><div class="device-list" id="deviceList"></div><div class="hint">Click a device to view its readings. Disabled devices cannot report new measurements.</div></div>
+</section>
+<section class="lower">
+ <div class="panel"><div class="panel-head"><div><h2>Disaster scenario controls</h2><div class="sub">Trigger a simulated event to test detection and alert routing</div></div><button id="clearEvent">Clear events</button></div><div class="controls">
+ <button class="disaster" data-type="quake"><strong>🔴 Earthquake</strong><small>Seismic activity and ground displacement</small></button>
+ <button class="disaster" data-type="flood"><strong>🔵 Flood / Tsunami</strong><small>Rising river level or ocean pressure anomaly</small></button>
+ <button class="disaster" data-type="fire"><strong>🟠 Bushfire</strong><small>Heat, smoke and dry-weather conditions</small></button>
+ <button class="disaster" data-type="volcano"><strong>🟣 Volcanic eruption</strong><small>Gas emissions and ground deformation</small></button>
+ </div><div class="hint" id="scenarioHint">No scenario active. Choose an event to begin.</div></div>
+ <div class="panel"><div class="panel-head"><div><h2>Selected device telemetry</h2><div class="sub" id="selectedName">Base Station · Central processing</div></div><span class="pill" id="selectedState">ONLINE</span></div><div class="readings" id="readings"></div><div class="hint">Values are synthetic and intended for software demonstration, not real-world warnings.</div></div>
+</section>
+<section class="panel"><div class="panel-head"><div><h2>Network event log</h2><div class="sub">Sensor reports, packet delivery and system alerts</div></div><div class="actions"><button id="pause">Pause readings</button><button id="reset">Reset simulation</button></div></div><div class="log" id="log" aria-live="polite"></div></section>
+</main>
+<script>
+const devices=[
+{id:'base',name:'Base Station',kind:'Central processing',icon:'🖥️',color:'#22c55e',link:'Internet / cable / satellite',values:['Packets processed','Network latency','Connected nodes'],units:['packets/s','ms','devices']},
+{id:'seismo',name:'Seismometer',kind:'Earthquake monitoring',icon:'〰️',color:'#ef4444',link:'Direct cable / internet',values:['Ground vibration','Wave amplitude','Event confidence'],units:['mm/s','µm','%']},
+{id:'satellite',name:'Satellite',kind:'Multi-disaster monitoring',icon:'🛰️',color:'#22c55e',link:'Satellite downlink',values:['Ground displacement','Thermal anomaly','Image confidence'],units:['cm','°C above baseline','%']},
+{id:'stream',name:'Stream Gauge',kind:'Flood monitoring',icon:'🌊',color:'#3b82f6',link:'Internet / radio relay',values:['Water level','Flow speed','Rate of rise'],units:['m','m/s','cm/h']},
+{id:'weather',name:'Remote Weather Station',kind:'Bushfire monitoring',icon:'🌡️',color:'#f97316',link:'Radio / satellite',values:['Temperature','Humidity','Wind speed'],units:['°C','%','km/h']},
+{id:'volcano',name:'Gas & Tilt Spectrometer',kind:'Volcano monitoring',icon:'🌋',color:'#a855f7',link:'Direct cable / satellite',values:['Sulfur dioxide','Ground tilt','Slope movement'],units:['ppm','µrad','mm/day']},
+{id:'dart',name:'DART Tsunami Buoy',kind:'Tsunami monitoring',icon:'⚓',color:'#3b82f6',link:'Acoustic / satellite relay',values:['Water pressure anomaly','Wave height','Buoy battery'],units:['kPa','m','%']}
+];
+let active=null,selected='base',paused=false,packets=0,alerts=0,seq=0,failed=new Set(),values={},scenario=null;
+const $=id=>document.getElementById(id);
+const random=(a,b,d=1)=>+(a+Math.random()*(b-a)).toFixed(d);
+function baseValues(){return {base:[12,38,7],seismo:[0.2,1.4,0],satellite:[0.1,0.3,98],stream:[1.2,0.4,0.2],weather:[24,48,16],volcano:[1.2,0.8,0.1],dart:[0.2,0.08,96]}}
+function log(msg,level='good'){const row=document.createElement('div');row.className='logline';row.innerHTML=`<span class="time">${new Date().toLocaleTimeString()}</span> &nbsp; <span class="${level}">${msg}</span>`;$('log').prepend(row)}
+function renderDevices(){ $('deviceList').innerHTML=devices.map(d=>`<div class="device ${selected===d.id?'selected':''}" data-device="${d.id}"><div class="device-icon">${d.icon}</div><div><b>${d.name}</b><small>${d.kind} · ${d.link}</small></div><span class="pill ${failed.has(d.id)?'off':''}">${failed.has(d.id)?'OFFLINE':'ONLINE'}</span></div>`).join('');document.querySelectorAll('[data-device]').forEach(el=>el.onclick=()=>selectDevice(el.dataset.device));$('deviceCount').textContent=`${7-failed.size} / 7`;$('health').textContent=`${Math.round((7-failed.size)/7*100)}%`;$('systemStatus').textContent=failed.size?'DEGRADED NETWORK':'SYSTEM OPERATIONAL'}
+function selectDevice(id){selected=id;const d=devices.find(x=>x.id===id);$('selectedName').textContent=d.name+' · '+d.kind;$('selectedState').textContent=failed.has(id)?'OFFLINE':'ONLINE';$('selectedState').className='pill '+(failed.has(id)?'off':'');$('readings').innerHTML=d.values.map((v,i)=>`<div class="reading"><span>${v}</span><strong>${values[id][i]} <em>${d.units[i]}</em></strong></div>`).join('');renderDevices()}
+function updateReadings(){devices.forEach(d=>{if(failed.has(d.id))return;let v=values[d.id];v[0]=random(Math.max(0,v[0]*.88),Math.max(1,v[0]*1.12),1);v[1]=random(Math.max(0,v[1]*.9),Math.max(1,v[1]*1.1),1);v[2]=random(Math.max(0,v[2]*.9),Math.max(1,v[2]*1.1),1)});if(scenario)applyScenario(false);selectDevice(selected)}
+function sendPacket(from){if(failed.has(from)||failed.has('base')){log(`${from} packet delivery failed — route unavailable`,'bad');return}packets++;$('packetCount').textContent=packets;const source=document.querySelector(`[data-id="${from}"] circle`),target=document.querySelector('[data-id="base"] circle');if(source&&target){const a=source.getAttribute('cx'),b=source.getAttribute('cy'),c=target.getAttribute('cx'),d=target.getAttribute('cy');const p=document.createElementNS('http://www.w3.org/2000/svg','circle');p.setAttribute('class','packet');p.setAttribute('r','4');$('packetLayer').appendChild(p);const anim=document.createElementNS('http://www.w3.org/2000/svg','animateMotion');anim.setAttribute('path',`M${a},${b} L${c},${d}`);anim.setAttribute('dur','.9s');anim.setAttribute('fill','freeze');p.appendChild(anim);anim.beginElement();setTimeout(()=>p.remove(),1100)}}
+function applyScenario(writeLog=true){if(!scenario)return;let affected=[];if(scenario==='quake'){values.seismo=[random(18,65,1),random(80,220,1),random(85,99,0)];values.satellite[0]=random(4,22,1);affected=['seismo','satellite']}
+if(scenario==='flood'){values.stream=[random(3.5,8,1),random(2,6,1),random(15,90,1)];values.dart=[random(5,28,1),random(1,5,1),values.dart[2]];affected=['stream','dart','satellite']}
+if(scenario==='fire'){values.weather=[random(38,48,1),random(8,22,1),random(30,65,1)];values.satellite[1]=random(12,35,1);affected=['weather','satellite']}
+if(scenario==='volcano'){values.volcano=[random(8,35,1),random(15,60,1),random(5,25,1)];values.satellite[1]=random(5,18,1);affected=['volcano','satellite']}
+affected.forEach(sendPacket);if(writeLog){alerts++;$('alertCount').textContent=alerts;log(`${scenario.toUpperCase()} WARNING — ${affected.length} monitoring sources reporting anomalies`,'bad');$('scenarioHint').textContent=`${scenario.toUpperCase()} scenario active · ${affected.length} sensors responding · Base station analysing incoming data.`}selectDevice(selected)}
+function setScenario(type){scenario=type;document.querySelectorAll('.disaster').forEach(b=>b.classList.toggle('active',b.dataset.type===type));applyScenario(true)}
+document.querySelectorAll('.disaster').forEach(b=>b.onclick=()=>setScenario(b.dataset.type));
+document.querySelectorAll('[data-id]').forEach(el=>el.addEventListener('click',()=>selectDevice(el.dataset.id)));
+$('toggleAll').onclick=()=>{if(failed.size===7)failed.clear();else devices.forEach(d=>failed.add(d.id));renderDevices();selectDevice(selected);log(failed.size?'All devices disabled':'All devices restored',failed.size?'bad':'good')};
+$('clearEvent').onclick=()=>{scenario=null;document.querySelectorAll('.disaster').forEach(b=>b.classList.remove('active'));values=baseValues();$('scenarioHint').textContent='No scenario active. Choose an event to begin.';selectDevice(selected);log('Active disaster scenario cleared','good')};
+$('pause').onclick=()=>{paused=!paused;$('pause').textContent=paused?'Resume readings':'Pause readings';log(paused?'Automatic telemetry paused':'Automatic telemetry resumed')};
+$('reset').onclick=()=>{scenario=null;paused=false;failed.clear();packets=0;alerts=0;values=baseValues();$('packetCount').textContent='0';$('alertCount').textContent='0';$('scenarioHint').textContent='No scenario active. Choose an event to begin.';$('pause').textContent='Pause readings';$('log').innerHTML='';document.querySelectorAll('.disaster').forEach(b=>b.classList.remove('active'));renderDevices();selectDevice('base');log('Simulation reset — all devices online')};
+values=baseValues();renderDevices();selectDevice('base');log('Network initialised — 7 devices registered');log('All monitoring channels reporting nominal readings');
+setInterval(()=>{if(!paused){updateReadings();if(Math.random()>.35){const candidates=devices.filter(d=>d.id!=='base'&&!failed.has(d.id));if(candidates.length)sendPacket(candidates[Math.floor(Math.random()*candidates.length)].id)}}},1800);
+</script>
+</body></html>
